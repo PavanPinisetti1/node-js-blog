@@ -3,20 +3,27 @@ const path = require('path');
 const {open} = require('sqlite');
 const sqlite3 = require('sqlite3');
 const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const dbPath = path.join(__dirname, 'data.db');
 const app = express();
+const port = process.env.PORT || 10000;
 
 app.use(express.json());
 app.use(cors());
+
+app.use(express.static('public'));
  
 let dataBase = null;
 
 const initializeDBAndServer = async () => {
   try {
     dataBase = await open({filename: dbPath, driver: sqlite3.Database});
-    app.listen(3005, () => {
-      console.log('Server Running at http://localhost:3005/')
+    app.listen(port, () => {
+        console.log(`Server Running at ${port}`)
+        // console.log(process.env.SALT)
     });
   } catch (e) {
     console.log(`DB Error: ${e.message}`);
@@ -109,7 +116,7 @@ app.post('/post/', async (req, res) => {
              post (user_id, post_title, post_content)
          VALUES (
              ${newUserId},
-             '${postTitle}',  -- Add comma here
+             '${postTitle}', 
              '${postContent}'
          );`;
  
